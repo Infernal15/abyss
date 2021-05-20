@@ -1,0 +1,47 @@
+<?php
+
+/**
+ * @file
+ */
+
+/**
+ * Implements hook_theme().
+ * Hook for processing information from the controller.
+ */
+function Abyss_theme($existing, $type, $theme, $path) {
+  $theme = [
+    'description' => [
+      'variables' => [
+        'fields' => [],
+        'form' => [],
+        'user' => [],
+      ],
+    ],
+  ];
+
+  $theme['page__abyss'] = [
+    'base hook' => 'page',
+  ];
+
+  return $theme;
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK().
+ */
+function Abyss_theme_suggestions_paragraph(array $variables) {
+  $suggestions = [];
+
+  $suggestions[] = 'page__abyss';
+
+  return $suggestions;
+}
+
+//
+// function Abyss_form_alter(&$form, &$form_state, $form_id) {
+//  switch ($form_id) {
+//    case 'abyss_table_form':
+//      // here comes the rest of the php stuff
+//      break;
+//  }
+// }.

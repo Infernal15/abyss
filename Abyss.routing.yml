@@ -1,0 +1,8 @@
+# The path to the page controller, which generates all the information for output.
+Abyss.page:
+  path: 'abyss'
+  defaults:
+    _controller:  '\Drupal\Abyss\Controller\PageController::page'
+    _title: 'Form API Examples'
+  requirements:
+    _permission: 'access content'
