@@ -354,7 +354,9 @@ class AbyssEditModalForm extends FormBase {
       if ($start !== FALSE && $end === FALSE) {
         $end = count($valueRowGroup[$i]) - 1;
       }
-
+      elseif (count($valueRowGroup[$i]) < $end && !$endCheck) {
+        $error[$i] = TRUE;
+      }
       if ($start === FALSE) {
         $unset = TRUE;
       }
