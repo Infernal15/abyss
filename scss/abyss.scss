@@ -1,13 +1,33 @@
 .wrapper {
   padding: 15px;
-  th {
-    text-align: center;
-  }
   .abyss-quarter input[type="number"]::-webkit-outer-spin-button,
   .abyss-quarter input[type="number"]::-webkit-inner-spin-button {
     display: none;
   }
+
+  .table {
+    th {
+      text-align: center;
+    }
+
+    td {
+      &:first-child {
+        text-align: center;
+      }
+      padding: 12px 3px;
+    }
+
+    input {
+      text-align: center;
+    }
+  }
+
+  .abyss-table-element {
+    width: 90px;
+  }
+
   .abyss-quarter {
+    width: 110px;
     input[type="number"] {
       -moz-appearance: textfield;
       -webkit-appearance: textfield;
@@ -48,7 +68,6 @@
     }
     .input-group {
       display: flex;
-      width: 80px;
       .field-prefix {
         width: 0px;
         padding: 3px 6px;

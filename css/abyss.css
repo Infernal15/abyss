@@ -1,22 +1,37 @@
 .wrapper {
   padding: 15px;
 }
-
-.wrapper th {
+.wrapper .abyss-quarter input[type=number]::-webkit-outer-spin-button,
+.wrapper .abyss-quarter input[type=number]::-webkit-inner-spin-button {
+  display: none;
+}
+.wrapper .table th {
   text-align: center;
 }
-
-.abyss-quarter input[type="number"] {
+.wrapper .table td {
+  padding: 12px 3px;
+}
+.wrapper .table td:first-child {
+  text-align: center;
+}
+.wrapper .table input {
+  text-align: center;
+}
+.wrapper .abyss-table-element {
+  width: 90px;
+}
+.wrapper .abyss-quarter {
+  width: 110px;
+}
+.wrapper .abyss-quarter input[type=number] {
   -moz-appearance: textfield;
   -webkit-appearance: textfield;
 }
-
-.abyss-quarter input[type="number"]::-webkit-outer-spin-button,
-.abyss-quarter input[type="number"]::-webkit-inner-spin-button {
+.wrapper .abyss-quarter input[type=number]::-webkit-outer-spin-button,
+.wrapper .abyss-quarter input[type=number]::-webkit-inner-spin-button {
   display: none;
 }
-
-.number-minus {
+.wrapper .abyss-quarter .number-minus {
   position: absolute;
   top: 1px;
   left: 1px;
@@ -30,8 +45,7 @@
   font-size: 16px;
   font-weight: 600;
 }
-
-.number-plus {
+.wrapper .abyss-quarter .number-plus {
   position: absolute;
   top: 1px;
   right: 1px;
@@ -45,18 +59,18 @@
   font-size: 16px;
   font-weight: 600;
 }
-
-.wrapper .input-group {
+.wrapper .abyss-quarter .input-group {
   display: flex;
-  width: 80px;
 }
-.input-group .field-prefix {
+.wrapper .abyss-quarter .input-group .field-prefix {
   width: 0px;
   padding: 3px 6px;
   cursor: pointer;
 }
-.input-group .field-suffix {
+.wrapper .abyss-quarter .input-group .field-suffix {
   width: 16px;
   padding: 3px 3px;
   cursor: pointer;
 }
+
+/*# sourceMappingURL=abyss.css.map */
