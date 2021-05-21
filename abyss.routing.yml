@@ -3,6 +3,6 @@ abyss.page:
   path: 'abyss'
   defaults:
     _controller:  '\Drupal\abyss\Controller\PageController::page'
-    _title: 'Form API Examples'
+    _title: 'Table for the report'
   requirements:
     _permission: 'access content'
