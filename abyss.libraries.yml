@@ -6,6 +6,5 @@ form:
   js:
     js/my-lib.js: {}
   dependencies:
-    - core/drupal.dialog.ajax
-    - core/jquery.form
+    - core/jquery
     - core/jquery.once
