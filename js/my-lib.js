@@ -1,8 +1,8 @@
-// //Author @Abyss
+// //Author @abyss
 //
 // Client-side validation functions.
 //
-// Drupal.behaviors.Abyss = {
+// Drupal.behaviors.abyss = {
 //
 //   attach: function (context, settings) {
 //

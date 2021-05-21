@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\Abyss\Form;
+namespace Drupal\abyss\Form;
 
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\MessageCommand;
@@ -19,12 +19,22 @@ class AbyssEditModalForm extends FormBase {
    * the corresponding "remove" button.
    */
 
+  /**
+   * Array of table values.
+   *
+   * @var array
+   */
   protected array $values;
 
+  /**
+   * Array saving table headers.
+   *
+   * @var array
+   */
   protected array $fields;
 
   /**
-   *
+   * Constructor.
    */
   public function __construct() {
     $this->values = [];
@@ -172,8 +182,7 @@ class AbyssEditModalForm extends FormBase {
             $form['list'][$i]['table'][$j][$field] = [
               '#type' => 'number',
               '#step' => 0.01,
-              '#title' => $this
-                ->t($field),
+              '#title' => $field,
               '#title_display' => 'invisible',
               '#wrapper_attributes' => [
                 'class' => [
@@ -188,8 +197,7 @@ class AbyssEditModalForm extends FormBase {
           }
           $form['list'][$i]['table'][$j][$field] = [
             '#type' => 'textfield',
-            '#title' => $this
-              ->t($field),
+            '#title' => $field,
             '#title_display' => 'invisible',
             '#wrapper_attributes' => [
               'class' => [
@@ -269,7 +277,7 @@ class AbyssEditModalForm extends FormBase {
   }
 
   /**
-   *
+   * Table data saving function.
    */
   private function saveRows(FormStateInterface $form_state, int $table_id = -1) {
     $num_of_tables = $form_state->get('num_of_tables');
@@ -290,7 +298,7 @@ class AbyssEditModalForm extends FormBase {
   }
 
   /**
-   *
+   * Table validation function.
    */
   public function confirmForm(array &$form, FormStateInterface $form_state) {
     $num_of_tables = $form_state->get('num_of_tables');
@@ -308,20 +316,6 @@ class AbyssEditModalForm extends FormBase {
       $tmp = $form_state->getValue('list')[$i]['table'];
       $valueRowGroup[$i] = [];
       $this->gapValidation($tmp, $num_of_rows[$i], $valueRowGroup[$i]);
-      // For ($j = 0; $j < $num_of_rows[$i]; $j++) {
-      //        foreach ($this->fields as $field) {
-      //          if ($tmp[$j][$field]['#value'] !== '' && (str_contains($field, 'Q') || str_contains($field, 'YTD'))) {
-      //            $setCheck = TRUE;
-      //          }
-      //          if ($tmp[$j][$field]['#value'] === '' && (str_contains($field, 'Q') || str_contains($field, 'YTD')) && $setCheck) {
-      //            $endCheck = TRUE;
-      //          }
-      //          if ($tmp[$j][$field]['#value'] !== '' && (str_contains($field, 'Q') || str_contains($field, 'YTD')) && $setCheck && $endCheck) {
-      //            $error = TRUE;
-      //          }
-      //        }
-      //        $form_state->setErrorByName("table${i}", $error ? $this->t('Invalid') : $this->t('Valid'));
-      //      }.
     }
     for ($i = 0; $i < count($valueRowGroup[$i]); $i++) {
       $setCheck = FALSE;
@@ -360,6 +354,9 @@ class AbyssEditModalForm extends FormBase {
       if ($start !== FALSE && $end === FALSE) {
         $end = count($valueRowGroup[$i]) - 1;
       }
+      elseif (count($valueRowGroup[$i]) > $end) {
+        $error[$i] = TRUE;
+      }
       if ($start === FALSE) {
         $unset = TRUE;
       }
@@ -371,7 +368,7 @@ class AbyssEditModalForm extends FormBase {
   }
 
   /**
-   *
+   * Function of combining arrays of table data into one array.
    */
   private function gapValidation(array $tmp, int $num_of_rows, &$fields) {
     $reversFields = array_reverse($this->fields);
@@ -388,7 +385,9 @@ class AbyssEditModalForm extends FormBase {
    * Callback for AjaxForm.
    *
    * @param array $form
+   *   Contains a form element.
    * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   Contains variables and data that have been saved in the form.
    *
    * @return \Drupal\Core\Ajax\AjaxResponse
    *
@@ -396,7 +395,7 @@ class AbyssEditModalForm extends FormBase {
    *   {@inheritdoc}
    *   Displays information about the save status.
    */
-  public function showStatus(array &$form, FormStateInterface $form_state) {
+  public function showStatus(array &$form, FormStateInterface $form_state): AjaxResponse {
     $response = new AjaxResponse();
     $error = $form_state->get("error");
 

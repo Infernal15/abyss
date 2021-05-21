@@ -2,13 +2,15 @@
 
 /**
  * @file
+ * Used to redirect standard twig templates to module twig templates.
  */
 
 /**
- * Implements hook_theme().
  * Hook for processing information from the controller.
+ *
+ * Implements hook_theme().
  */
-function Abyss_theme($existing, $type, $theme, $path) {
+function abyss_theme($existing, $type, $theme, $path) {
   $theme = [
     'description' => [
       'variables' => [
@@ -29,19 +31,10 @@ function Abyss_theme($existing, $type, $theme, $path) {
 /**
  * Implements hook_theme_suggestions_HOOK().
  */
-function Abyss_theme_suggestions_paragraph(array $variables) {
+function abyss_theme_suggestions_paragraph(array $variables) {
   $suggestions = [];
 
   $suggestions[] = 'page__abyss';
 
   return $suggestions;
 }
-
-//
-// function Abyss_form_alter(&$form, &$form_state, $form_id) {
-//  switch ($form_id) {
-//    case 'abyss_table_form':
-//      // here comes the rest of the php stuff
-//      break;
-//  }
-// }.
