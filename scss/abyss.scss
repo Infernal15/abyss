@@ -1,3 +1,4 @@
+@import "extends";
 .wrapper {
   padding: 15px;
   .abyss-quarter input[type="number"]::-webkit-outer-spin-button,
@@ -5,16 +6,38 @@
     display: none;
   }
 
-  .table {
+  table {
+    width: 100%;
+    margin-bottom: 1rem;
+    color: #343a40;
     th {
       text-align: center;
+      vertical-align: bottom;
+      border-bottom: 2px solid #dee2e6;
+      border-top: 1px solid #dee2e6;
+      padding: 0.75rem;
     }
 
     td {
+      vertical-align: top;
+      border-top: 1px solid #dee2e6;
       &:first-child {
         text-align: center;
       }
       padding: 12px 3px;
+      .abyss-quarter {
+        display: flex;
+        width: 80px;
+        .field-prefix {
+          @extend %field;
+          margin-right: -1px;
+        }
+        .field-suffix {
+          @extend %field;
+          margin-left: -1px;
+          font-size: 10px;
+        }
+      }
     }
 
     input {
@@ -27,7 +50,6 @@
   }
 
   .abyss-quarter {
-    width: 110px;
     input[type="number"] {
       -moz-appearance: textfield;
       -webkit-appearance: textfield;
@@ -68,6 +90,26 @@
     }
     .input-group {
       display: flex;
+      &-prepend {
+        margin-right: -1px;
+      }
+      &-append {
+        margin-left: -1px;
+      }
+      &-text {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0;
+        font-size: 1rem;
+        font-weight: normal;
+        line-height: 1.5;
+        color: #495057;
+        text-align: center;
+        white-space: nowrap;
+        background-color: #e9ecef;
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+      }
       .field-prefix {
         width: 0px;
         padding: 3px 6px;

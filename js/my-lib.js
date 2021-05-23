@@ -6,9 +6,9 @@ Drupal.behaviors.abyss = {
   attach: function (context, settings) {
 
     (function ($, Drupal) {
-      $('.wrapper .input-group .input-group-text').once().bind('click', function (main) {
-        let setter = $($(main.target).closest('.input-group')).children('input');
-        let element = $($(main.target).closest('.input-group')).children('input').get(0);
+      $('.wrapper .input-group .input-group-text, .wrapper td .abyss-quarter span[class^="field"]').once().bind('click', function (main) {
+        let setter = $($(main.target).closest('div.abyss-quarter')).children('input');
+        let element = $($(main.target).closest('div.abyss-quarter')).children('input').get(0);
         let point = main.target.textContent;
         let quarter = $($(main.target).closest('tr')).children('.abyss-quarter');
         let max = (parseFloat(element.dataset.value) + parseFloat('0.05')).toFixed(2);

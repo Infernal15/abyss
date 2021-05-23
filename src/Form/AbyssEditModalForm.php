@@ -91,10 +91,10 @@ class AbyssEditModalForm extends FormBase {
     }
 
     for ($i = 0; $i < $num_of_tables; $i++) {
-      $num_of_rows[$i] = $form_state->get("num_of_rows$i");
+      $num_of_rows[$i] = $form_state->get('num_of_rows' . $i);
       if (empty($num_of_rows[$i])) {
         $num_of_rows[$i] = 1;
-        $form_state->set("num_of_rows$i", $num_of_rows[$i]);
+        $form_state->set('num_of_rows' . $i, $num_of_rows[$i]);
       }
     }
 
@@ -172,9 +172,9 @@ class AbyssEditModalForm extends FormBase {
       ];
       $form['list'][$i]['table']['#attributes']['class'][] = 'abyss-table';
 
-      for ($j = 0; $j < $num_of_rows[$i]; $j++) {
+      for ($j = $num_of_rows[$i]; $j > 0; $j--) {
         $form['list'][$i]['table'][$j]['Year'] = [
-          '#plain_text' => date("Y") - $num_of_rows[$i] + $j + 1,
+          '#plain_text' => date('Y') - $j + 1,
         ];
 
         foreach ($this->fields as $field) {
@@ -192,7 +192,7 @@ class AbyssEditModalForm extends FormBase {
               '#field_prefix' => '-',
               '#field_suffix' => '+',
             ];
-            $form['list'][$i]['table'][$j][$field]['#attributes']['data-value'] = $this->values[$i][$j][$field] ? $this->values[$i][$j][$field] : '';
+            $form['list'][$i]['table'][$j][$field]['#attributes']['data-value'] = '';
             continue;
           }
           $form['list'][$i]['table'][$j][$field] = [
@@ -205,12 +205,6 @@ class AbyssEditModalForm extends FormBase {
               ],
             ],
           ];
-        }
-      }
-      for ($j = 0; $j < $num_of_rows[$i]; $j++) {
-        $form_state->getValue('list')[$i]['table'][$j] = [];
-        foreach ($this->fields as $field) {
-          $form['list'][$i]['table'][$j][$field]['#value'] = $this->values[$i][$j - 1][$field] ? $this->values[$i][$j - 1][$field] : '';
         }
       }
     }
@@ -257,7 +251,6 @@ class AbyssEditModalForm extends FormBase {
     $name_field = $form_state->get('num_of_tables');
     $add_field = $name_field + 1;
     $form_state->set('num_of_tables', $add_field);
-    $this->saveRows($form_state);
     $form_state->setRebuild();
   }
 
@@ -268,33 +261,11 @@ class AbyssEditModalForm extends FormBase {
    */
   public function addRow(array &$form, FormStateInterface $form_state) {
     $table_id = $form_state->getTriggeringElement()['#name'];
-    $table_id = explode(" ", $table_id)[1];
-    $num_of_rows = $form_state->get("num_of_rows$table_id");
+    $table_id = explode(' ', $table_id)[1];
+    $num_of_rows = $form_state->get('num_of_rows' . $table_id);
     $news_rows = $num_of_rows + 1;
-    $form_state->set("num_of_rows$table_id", $news_rows);
-    $this->saveRows($form_state, $table_id);
+    $form_state->set('num_of_rows' . $table_id, $news_rows);
     $form_state->setRebuild();
-  }
-
-  /**
-   * Table data saving function.
-   */
-  private function saveRows(FormStateInterface $form_state, int $table_id = -1) {
-    $num_of_tables = $form_state->get('num_of_tables');
-    for ($i = 0; $i < $num_of_tables; $i++) {
-      if ($table_id !== $i) {
-        $size = count($form_state->getValue('list')[$i]['table']);
-        $arr = $form_state->getValue('list')[$i]['table'];
-        $temp = [];
-        for ($j = 0; $j < $size; $j++) {
-          $temp[$j - 1] = $arr[$j];
-        }
-        $this->values[$i] = $temp;
-      }
-      else {
-        $this->values[$i] = $form_state->getValue('list')[$i]['table'];
-      }
-    }
   }
 
   /**
@@ -303,7 +274,7 @@ class AbyssEditModalForm extends FormBase {
   public function confirmForm(array &$form, FormStateInterface $form_state) {
     $num_of_tables = $form_state->get('num_of_tables');
     for ($i = 0; $i < $num_of_tables; $i++) {
-      $num_of_rows[$i] = $form_state->get("num_of_rows$i");
+      $num_of_rows[$i] = $form_state->get('num_of_rows' . $i);
     }
 
     $start = FALSE;
@@ -364,7 +335,7 @@ class AbyssEditModalForm extends FormBase {
         $error[$i] = TRUE;
       }
     }
-    $form_state->set("error", array_search(TRUE, $error) !== FALSE ? $this->t('Invalid') : $this->t('Valid'));
+    $form_state->set('error', array_search(TRUE, $error) !== FALSE ? $this->t('Invalid') : $this->t('Valid'));
   }
 
   /**
@@ -397,7 +368,7 @@ class AbyssEditModalForm extends FormBase {
    */
   public function showStatus(array &$form, FormStateInterface $form_state): AjaxResponse {
     $response = new AjaxResponse();
-    $error = $form_state->get("error");
+    $error = $form_state->get('error');
 
     if ($error === 'Invalid') {
       $response->addCommand(new MessageCommand($error, '.result', ['type' => 'error']));
