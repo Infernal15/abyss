@@ -1,16 +1,17 @@
 //Author @abyss
 
-
 Drupal.behaviors.abyss = {
 
   attach: function (context, settings) {
 
     (function ($, Drupal) {
-      $('.wrapper .input-group .input-group-text, .wrapper td .abyss-quarter span[class^="field"]').once().bind('click', function (main) {
+      $('#columns-wrapper td .abyss-quarter span[class^="field"]').once().bind('click', function (main) {
         let setter = $($(main.target).closest('div.abyss-quarter')).children('input');
         let element = $($(main.target).closest('div.abyss-quarter')).children('input').get(0);
         let point = main.target.textContent;
         let quarter = $($(main.target).closest('tr')).children('.abyss-quarter');
+        if (!element.dataset.value)
+          return;
         let max = (parseFloat(element.dataset.value) + parseFloat('0.05')).toFixed(2);
         let min = (parseFloat(element.dataset.value) - parseFloat('0.05')).toFixed(2);
 

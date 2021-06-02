@@ -24,43 +24,40 @@ class AbyssEditModalForm extends FormBase {
    *
    * @var array
    */
-  protected array $values;
+  protected array $values = [];
 
   /**
    * Array saving table headers.
    *
    * @var array
    */
-  protected array $fields;
-
-  /**
-   * Constructor.
-   */
-  public function __construct() {
-    $this->values = [];
-    $this->fields = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Q1',
-      'Apr',
-      'May',
-      'Jun',
-      'Q2',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Q3',
-      'Oct',
-      'Nov',
-      'Dec',
-      'Q4',
-      'YTD',
-    ];
-  }
+  protected array $fields = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Q1',
+    'Apr',
+    'May',
+    'Jun',
+    'Q2',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Q3',
+    'Oct',
+    'Nov',
+    'Dec',
+    'Q4',
+    'YTD',
+  ];
 
   /**
    * {@inheritdoc}
+   *
+   * @param array $form
+   *   Contain form render array.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   Contains data stored in the form.
    */
   public function buildForm(array $form, FormStateInterface $form_state): array {
     $form['message'] = [
@@ -73,10 +70,11 @@ class AbyssEditModalForm extends FormBase {
       '#type' => 'container',
       '#attributes' => ['id' => 'columns-wrapper'],
     ];
+
     $form['list']['add_table'] = [
-      '#type' => 'submit',
+      '#type' => 'button',
+      '#name' => 'add_table',
       '#value' => $this->t('Add Table'),
-      '#submit' => ['::addTable'],
       '#ajax' => [
         'callback' => '::addMoreCallback',
         'event' => 'click',
@@ -84,27 +82,33 @@ class AbyssEditModalForm extends FormBase {
       ],
     ];
 
-    $num_of_tables = $form_state->get('num_of_tables');
-    if (empty($num_of_tables)) {
-      $num_of_tables = 1;
-      $form_state->set('num_of_tables', $num_of_tables);
+    $tables = $form_state->get('tables');
+    $check_element = $form_state->getTriggeringElement();
+    if (empty($tables)) {
+      $tables = [];
+      $tables[] = 1;
     }
-
-    for ($i = 0; $i < $num_of_tables; $i++) {
-      $num_of_rows[$i] = $form_state->get('num_of_rows' . $i);
-      if (empty($num_of_rows[$i])) {
-        $num_of_rows[$i] = 1;
-        $form_state->set('num_of_rows' . $i, $num_of_rows[$i]);
+    if (!empty($check_element)) {
+      if ($check_element['#name'] == 'add_table') {
+        $tables[] = 1;
+      }
+      if ($check_element) {
+        if (str_contains($check_element['#name'], 'add_rows')) {
+          $tables[$check_element['#table']]++;
+        }
       }
     }
 
-    for ($i = 0; $i < $num_of_tables; $i++) {
+    $form_state->set('tables', $tables);
+
+    for ($i = 0; $i < count($tables); $i++) {
       $form['list'][$i] = [
         '#type' => 'fieldgroup',
       ];
       $form['list'][$i]['add_row'] = [
-        '#name' => 'op ' . $i,
-        '#type' => 'submit',
+        '#name' => 'add_rows_' . $i,
+        '#type' => 'button',
+        '#table' => $i,
         '#value' => $this->t('Add Year'),
         '#submit' => ['::addRow'],
         '#ajax' => [
@@ -117,62 +121,44 @@ class AbyssEditModalForm extends FormBase {
       $form['list'][$i]['table'] = [
         '#type' => 'table',
         '#header' => [
-          $this
-            ->t('Year'),
-          $this
-            ->t('Jan'),
-          $this
-            ->t('Feb'),
-          $this
-            ->t('Mar'),
+          $this->t('Year'),
+          $this->t('Jan'),
+          $this->t('Feb'),
+          $this->t('Mar'),
           [
             'class' => 'abyss-quarter',
-            'data' => $this
-              ->t('Q1'),
+            'data' => $this->t('Q1'),
           ],
-          $this
-            ->t('Apr'),
-          $this
-            ->t('May'),
-          $this
-            ->t('Jun'),
+          $this->t('Apr'),
+          $this->t('May'),
+          $this->t('Jun'),
           [
             'class' => 'abyss-quarter',
-            'data' => $this
-              ->t('Q2'),
+            'data' => $this->t('Q2'),
           ],
-          $this
-            ->t('Jul'),
-          $this
-            ->t('Aug'),
-          $this
-            ->t('Sep'),
+          $this->t('Jul'),
+          $this->t('Aug'),
+          $this->t('Sep'),
           [
             'class' => 'abyss-quarter',
-            'data' => $this
-              ->t('Q3'),
+            'data' => $this->t('Q3'),
           ],
-          $this
-            ->t('Act'),
-          $this
-            ->t('Nov'),
-          $this
-            ->t('Dec'),
+          $this->t('Act'),
+          $this->t('Nov'),
+          $this->t('Dec'),
           [
             'class' => 'abyss-quarter',
-            'data' => $this
-              ->t('Q4'),
+            'data' => $this->t('Q4'),
           ],
           [
             'class' => 'abyss-quarter',
-            'data' => $this
-              ->t('YTD'),
+            'data' => $this->t('YTD'),
           ],
         ],
       ];
       $form['list'][$i]['table']['#attributes']['class'][] = 'abyss-table';
 
-      for ($j = $num_of_rows[$i]; $j > 0; $j--) {
+      for ($j = $tables[$i]; $j > 0; $j--) {
         $form['list'][$i]['table'][$j]['Year'] = [
           '#plain_text' => date('Y') - $j + 1,
         ];
@@ -192,11 +178,17 @@ class AbyssEditModalForm extends FormBase {
               '#field_prefix' => '-',
               '#field_suffix' => '+',
             ];
-            $form['list'][$i]['table'][$j][$field]['#attributes']['data-value'] = '';
+            $temp = $form_state->getValue('list');
+            if (!empty($temp)) {
+              $form['list'][$i]['table'][$j][$field]['#attributes']['data-value'] = $temp[$i]['table'][$j][$field];
+            }
+            else {
+              $form['list'][$i]['table'][$j][$field]['#attributes']['data-value'] = '';
+            }
             continue;
           }
           $form['list'][$i]['table'][$j][$field] = [
-            '#type' => 'textfield',
+            '#type' => 'number',
             '#title' => $field,
             '#title_display' => 'invisible',
             '#wrapper_attributes' => [
@@ -216,13 +208,13 @@ class AbyssEditModalForm extends FormBase {
     $form['list']['actions']['confirm'] = [
       '#type' => 'submit',
       '#value' => $this->t('Send form'),
-      '#submit' => ['::confirmForm'],
       '#ajax' => [
         'callback' => '::showStatus',
         'event' => 'click',
         'wrapper' => 'result',
       ],
     ];
+    $form['#attached']['library'][] = 'abyss/form';
     return $form;
   }
 
@@ -243,116 +235,6 @@ class AbyssEditModalForm extends FormBase {
   }
 
   /**
-   * Submit handler for the "add-one-more" button.
-   *
-   * Increments the max counter and causes a rebuild.
-   */
-  public function addTable(array &$form, FormStateInterface $form_state) {
-    $name_field = $form_state->get('num_of_tables');
-    $add_field = $name_field + 1;
-    $form_state->set('num_of_tables', $add_field);
-    $form_state->setRebuild();
-  }
-
-  /**
-   * Submit handler for the "add-one-more" button.
-   *
-   * Increments the max counter and causes a rebuild.
-   */
-  public function addRow(array &$form, FormStateInterface $form_state) {
-    $table_id = $form_state->getTriggeringElement()['#name'];
-    $table_id = explode(' ', $table_id)[1];
-    $num_of_rows = $form_state->get('num_of_rows' . $table_id);
-    $news_rows = $num_of_rows + 1;
-    $form_state->set('num_of_rows' . $table_id, $news_rows);
-    $form_state->setRebuild();
-  }
-
-  /**
-   * Table validation function.
-   */
-  public function confirmForm(array &$form, FormStateInterface $form_state) {
-    $num_of_tables = $form_state->get('num_of_tables');
-    for ($i = 0; $i < $num_of_tables; $i++) {
-      $num_of_rows[$i] = $form_state->get('num_of_rows' . $i);
-    }
-
-    $start = FALSE;
-    $end = FALSE;
-    $unset = FALSE;
-    $valueRowGroup = [];
-    $error = [];
-
-    for ($i = 0; $i < $num_of_tables; $i++) {
-      $tmp = $form_state->getValue('list')[$i]['table'];
-      $valueRowGroup[$i] = [];
-      $this->gapValidation($tmp, $num_of_rows[$i], $valueRowGroup[$i]);
-    }
-    for ($i = 0; $i < count($valueRowGroup[$i]); $i++) {
-      $setCheck = FALSE;
-      $endCheck = FALSE;
-      $error[$i] = FALSE;
-      for ($j = 0; $j < count($valueRowGroup[$i]); $j++) {
-        if (!$setCheck && $valueRowGroup[$i][$j] !== '') {
-          $setCheck = TRUE;
-          if ($i === 0) {
-            $start = $j;
-          }
-          elseif ($start !== FALSE && $start !== $j) {
-            $error[$i] = TRUE;
-          }
-          if ($unset) {
-            $error[$i] = TRUE;
-          }
-          continue;
-        }
-
-        if ($setCheck && $valueRowGroup[$i][$j] === '') {
-          if ($i === 0 && $end === FALSE) {
-            $end = $j;
-          }
-          elseif ($end !== FALSE && $end !== $j && !$endCheck) {
-            $error[$i] = TRUE;
-          }
-          $endCheck = TRUE;
-          continue;
-        }
-
-        if ($setCheck && $endCheck && $valueRowGroup[$i][$j] !== '') {
-          $error[$i] = TRUE;
-        }
-      }
-      if ($start !== FALSE && $end === FALSE) {
-        $end = count($valueRowGroup[$i]) - 1;
-      }
-      elseif (count($valueRowGroup[$i]) < $end && !$endCheck) {
-        $error[$i] = TRUE;
-      }
-      if ($start === FALSE) {
-        $unset = TRUE;
-      }
-      elseif (!$unset && !$setCheck) {
-        $error[$i] = TRUE;
-      }
-    }
-    $form_state->set('error', array_search(TRUE, $error) !== FALSE ? $this->t('Invalid') : $this->t('Valid'));
-  }
-
-  /**
-   * Function of combining arrays of table data into one array.
-   */
-  private function gapValidation(array $tmp, int $num_of_rows, &$fields) {
-    $reversFields = array_reverse($this->fields);
-    for ($j = $num_of_rows - 1; $j >= 0; $j--) {
-      foreach ($reversFields as $field) {
-        if (!(str_contains($field, 'Q') || str_contains($field, 'YTD'))) {
-          array_push($fields, $tmp[$j][$field]['#value']);
-        }
-      }
-    }
-  }
-
-  /**
    * Callback for AjaxForm.
    *
    * @param array $form
@@ -362,19 +244,17 @@ class AbyssEditModalForm extends FormBase {
    *
    * @return \Drupal\Core\Ajax\AjaxResponse
    *
-   *
-   *   {@inheritdoc}
    *   Displays information about the save status.
    */
   public function showStatus(array &$form, FormStateInterface $form_state): AjaxResponse {
     $response = new AjaxResponse();
-    $error = $form_state->get('error');
+    $valid = $form_state->get('valid');
 
-    if ($error === 'Invalid') {
-      $response->addCommand(new MessageCommand($error, '.result', ['type' => 'error']));
+    if ($valid) {
+      $response->addCommand(new MessageCommand('Valid', '.result', ['type' => 'status']));
     }
     else {
-      $response->addCommand(new MessageCommand($error, '.result', ['type' => 'status']));
+      $response->addCommand(new MessageCommand('Invalid', '.result', ['type' => 'error']));
     }
 
     return $response;
@@ -384,9 +264,66 @@ class AbyssEditModalForm extends FormBase {
    * Final submit handler.
    *
    * Reports what values were finally set.
+   *
+   * @param array $form
+   *   Contain form render array.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   Contains data stored in the form.
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
+    $num_of_tables = $form_state->get('tables');
+    $value_row_group = [];
 
+    for ($i = 0; $i < count($num_of_tables); $i++) {
+      $tmp = $form_state->getValue('list')[$i]['table'];
+      $value_row_group[$i] = [];
+      $this->gapValidation($tmp, $num_of_tables[$i], $value_row_group[$i]);
+    }
+    $set_check = 0;
+    $end_check = 0;
+    for ($i = 0; $i < count($value_row_group[$i]); $i++) {
+      $value_row_group[$i] = array_filter($value_row_group[$i], function ($v) {
+        return $v != '';
+      });
+      if ($i == 0) {
+        $set_check = array_key_first($value_row_group[$i]);
+        $end_check = array_key_last($value_row_group[$i]) + 1;
+      }
+      if (array_key_first($value_row_group[$i]) + count($value_row_group[$i]) !== array_key_last($value_row_group[$i]) + 1) {
+        $form_state->set('valid', FALSE);
+        return;
+      }
+      if (array_key_first($value_row_group[$i]) != $set_check) {
+        $form_state->set('valid', FALSE);
+        return;
+      }
+      if (array_key_last($value_row_group[$i]) + 1 != $end_check) {
+        $form_state->set('valid', FALSE);
+        return;
+      }
+    }
+    $form_state->set('valid', TRUE);
+  }
+
+  /**
+   * Function of combining arrays of table data into one array.
+   *
+   * @param array $tmp
+   *   Contains data from tables.
+   * @param int $num_of_rows
+   *   Contain rows num.
+   * @param array $fields
+   *   Used to return a grouped data set.
+   */
+  private function gapValidation(array $tmp, int $num_of_rows, array &$fields) {
+    $reversFields = array_reverse($this->fields);
+    for ($j = 1; $j <= $num_of_rows; $j++) {
+      foreach ($reversFields as $field) {
+        if (!(str_contains($field, 'Q') || str_contains($field, 'YTD'))) {
+          array_push($fields, $tmp[$j][$field]['#value']);
+        }
+      }
+    }
   }
 
 }

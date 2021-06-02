@@ -1,7 +1,8 @@
-.wrapper table td .abyss-quarter .field-suffix,
-.wrapper table td .abyss-quarter .field-prefix {
+.path-abyss #columns-wrapper table td .abyss-quarter .field-suffix,
+.path-abyss #columns-wrapper table td .abyss-quarter .field-prefix {
   display: flex;
   align-items: center;
+  justify-content: center;
   margin-bottom: 0;
   font-size: 1rem;
   font-weight: normal;
@@ -17,59 +18,73 @@
   cursor: pointer;
 }
 
-.wrapper {
+.path-abyss #main-wrapper {
+  width: 100%;
+  max-width: 100%;
   padding: 15px;
 }
-.wrapper .abyss-quarter input[type=number]::-webkit-outer-spin-button,
-.wrapper .abyss-quarter input[type=number]::-webkit-inner-spin-button {
+.path-abyss #content {
+  margin: 0;
+  width: 100%;
+}
+.path-abyss #content .section {
+  padding: 0;
+}
+.path-abyss #sidebar-first {
   display: none;
 }
-.wrapper table {
+.path-abyss #columns-wrapper {
+  padding: 15px;
+}
+.path-abyss #columns-wrapper table {
   width: 100%;
   margin-bottom: 1rem;
   color: #343a40;
 }
-.wrapper table th {
+.path-abyss #columns-wrapper table th {
   text-align: center;
   vertical-align: bottom;
   border-bottom: 2px solid #dee2e6;
   border-top: 1px solid #dee2e6;
   padding: 0.75rem;
 }
-.wrapper table td {
+.path-abyss #columns-wrapper table td {
   vertical-align: top;
   border-top: 1px solid #dee2e6;
   padding: 12px 3px;
 }
-.wrapper table td:first-child {
+.path-abyss #columns-wrapper table td:first-child {
   text-align: center;
 }
-.wrapper table td .abyss-quarter {
+.path-abyss #columns-wrapper table td .abyss-quarter {
   display: flex;
   width: 80px;
+  margin: auto;
 }
-.wrapper table td .abyss-quarter .field-prefix {
+.path-abyss #columns-wrapper table td .abyss-quarter .field-prefix {
   margin-right: -1px;
 }
-.wrapper table td .abyss-quarter .field-suffix {
+.path-abyss #columns-wrapper table td .abyss-quarter .field-suffix {
   margin-left: -1px;
   font-size: 10px;
 }
-.wrapper table input {
+.path-abyss #columns-wrapper table input {
   text-align: center;
+  padding: 4px 0;
+  width: 100%;
 }
-.wrapper .abyss-table-element {
-  width: 90px;
-}
-.wrapper .abyss-quarter input[type=number] {
+.path-abyss #columns-wrapper table input[type=number] {
   -moz-appearance: textfield;
   -webkit-appearance: textfield;
 }
-.wrapper .abyss-quarter input[type=number]::-webkit-outer-spin-button,
-.wrapper .abyss-quarter input[type=number]::-webkit-inner-spin-button {
+.path-abyss #columns-wrapper table input[type=number]::-webkit-outer-spin-button,
+.path-abyss #columns-wrapper table input[type=number]::-webkit-inner-spin-button {
   display: none;
 }
-.wrapper .abyss-quarter .number-minus {
+.path-abyss #columns-wrapper .abyss-table-element {
+  width: 90px;
+}
+.path-abyss #columns-wrapper .abyss-quarter .number-minus {
   position: absolute;
   top: 1px;
   left: 1px;
@@ -83,7 +98,7 @@
   font-size: 16px;
   font-weight: 600;
 }
-.wrapper .abyss-quarter .number-plus {
+.path-abyss #columns-wrapper .abyss-quarter .number-plus {
   position: absolute;
   top: 1px;
   right: 1px;
@@ -97,16 +112,16 @@
   font-size: 16px;
   font-weight: 600;
 }
-.wrapper .abyss-quarter .input-group {
+.path-abyss #columns-wrapper .abyss-quarter .input-group {
   display: flex;
 }
-.wrapper .abyss-quarter .input-group-prepend {
+.path-abyss #columns-wrapper .abyss-quarter .input-group-prepend {
   margin-right: -1px;
 }
-.wrapper .abyss-quarter .input-group-append {
+.path-abyss #columns-wrapper .abyss-quarter .input-group-append {
   margin-left: -1px;
 }
-.wrapper .abyss-quarter .input-group-text {
+.path-abyss #columns-wrapper .abyss-quarter .input-group-text {
   display: flex;
   align-items: center;
   margin-bottom: 0;
@@ -120,12 +135,12 @@
   border: 1px solid #ced4da;
   border-radius: 0.25rem;
 }
-.wrapper .abyss-quarter .input-group .field-prefix {
+.path-abyss #columns-wrapper .abyss-quarter .input-group .field-prefix {
   width: 0px;
   padding: 3px 6px;
   cursor: pointer;
 }
-.wrapper .abyss-quarter .input-group .field-suffix {
+.path-abyss #columns-wrapper .abyss-quarter .input-group .field-suffix {
   width: 16px;
   padding: 3px 3px;
   cursor: pointer;

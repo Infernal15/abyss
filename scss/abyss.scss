@@ -1,124 +1,153 @@
 @import "extends";
-.wrapper {
-  padding: 15px;
-  .abyss-quarter input[type="number"]::-webkit-outer-spin-button,
-  .abyss-quarter input[type="number"]::-webkit-inner-spin-button {
+.path-abyss {
+  #main-wrapper {
+    width: 100%;
+    max-width: 100%;
+    padding: 15px;
+  }
+  #content {
+    margin: 0;
+    width: 100%;
+    .section {
+      padding: 0;
+    }
+  }
+  #sidebar-first {
     display: none;
   }
+  #columns-wrapper {
+    padding: 15px;
 
-  table {
-    width: 100%;
-    margin-bottom: 1rem;
-    color: #343a40;
-    th {
-      text-align: center;
-      vertical-align: bottom;
-      border-bottom: 2px solid #dee2e6;
-      border-top: 1px solid #dee2e6;
-      padding: 0.75rem;
+    table {
+      width: 100%;
+      margin-bottom: 1rem;
+      color: #343a40;
+
+      th {
+        text-align: center;
+        vertical-align: bottom;
+        border-bottom: 2px solid #dee2e6;
+        border-top: 1px solid #dee2e6;
+        padding: 0.75rem;
+      }
+
+      td {
+        vertical-align: top;
+        border-top: 1px solid #dee2e6;
+        padding: 12px 3px;
+
+        &:first-child {
+          text-align: center;
+        }
+
+        .abyss-quarter {
+          display: flex;
+          width: 80px;
+          margin: auto;
+
+          .field-prefix {
+            @extend %field;
+            margin-right: -1px;
+          }
+
+          .field-suffix {
+            @extend %field;
+            margin-left: -1px;
+            font-size: 10px;
+          }
+        }
+      }
+
+      input {
+        text-align: center;
+        padding: 4px 0;
+        width: 100%;
+      }
+
+      input[type="number"] {
+        -moz-appearance: textfield;
+        -webkit-appearance: textfield;
+      }
+
+      input[type="number"]::-webkit-outer-spin-button,
+      input[type="number"]::-webkit-inner-spin-button {
+        display: none;
+      }
     }
 
-    td {
-      vertical-align: top;
-      border-top: 1px solid #dee2e6;
-      &:first-child {
+    .abyss-table-element {
+      width: 90px;
+    }
+
+    .abyss-quarter {
+
+      .number-minus {
+        position: absolute;
+        top: 1px;
+        left: 1px;
+        bottom: 1px;
+        width: 20px;
+        padding: 0;
+        display: block;
         text-align: center;
+        border: none;
+        border-right: 1px solid #ddd;
+        font-size: 16px;
+        font-weight: 600;
       }
-      padding: 12px 3px;
-      .abyss-quarter {
+
+      .number-plus {
+        position: absolute;
+        top: 1px;
+        right: 1px;
+        bottom: 1px;
+        width: 20px;
+        padding: 0;
+        display: block;
+        text-align: center;
+        border: none;
+        border-left: 1px solid #ddd;
+        font-size: 16px;
+        font-weight: 600;
+      }
+
+      .input-group {
         display: flex;
-        width: 80px;
-        .field-prefix {
-          @extend %field;
+
+        &-prepend {
           margin-right: -1px;
         }
-        .field-suffix {
-          @extend %field;
+
+        &-append {
           margin-left: -1px;
-          font-size: 10px;
         }
-      }
-    }
 
-    input {
-      text-align: center;
-    }
-  }
+        &-text {
+          display: flex;
+          align-items: center;
+          margin-bottom: 0;
+          font-size: 1rem;
+          font-weight: normal;
+          line-height: 1.5;
+          color: #495057;
+          text-align: center;
+          white-space: nowrap;
+          background-color: #e9ecef;
+          border: 1px solid #ced4da;
+          border-radius: 0.25rem;
+        }
 
-  .abyss-table-element {
-    width: 90px;
-  }
+        .field-prefix {
+          width: 0px;
+          padding: 3px 6px;
+          cursor: pointer;
+        }
 
-  .abyss-quarter {
-    input[type="number"] {
-      -moz-appearance: textfield;
-      -webkit-appearance: textfield;
-    }
-    input[type="number"]::-webkit-outer-spin-button,
-    input[type="number"]::-webkit-inner-spin-button {
-      display: none;
-    }
-
-    .number-minus {
-      position: absolute;
-      top: 1px;
-      left: 1px;
-      bottom: 1px;
-      width: 20px;
-      padding: 0;
-      display: block;
-      text-align: center;
-      border: none;
-      border-right: 1px solid #ddd;
-      font-size: 16px;
-      font-weight: 600;
-    }
-
-    .number-plus {
-      position: absolute;
-      top: 1px;
-      right: 1px;
-      bottom: 1px;
-      width: 20px;
-      padding: 0;
-      display: block;
-      text-align: center;
-      border: none;
-      border-left: 1px solid #ddd;
-      font-size: 16px;
-      font-weight: 600;
-    }
-    .input-group {
-      display: flex;
-      &-prepend {
-        margin-right: -1px;
-      }
-      &-append {
-        margin-left: -1px;
-      }
-      &-text {
-        display: flex;
-        align-items: center;
-        margin-bottom: 0;
-        font-size: 1rem;
-        font-weight: normal;
-        line-height: 1.5;
-        color: #495057;
-        text-align: center;
-        white-space: nowrap;
-        background-color: #e9ecef;
-        border: 1px solid #ced4da;
-        border-radius: 0.25rem;
-      }
-      .field-prefix {
-        width: 0px;
-        padding: 3px 6px;
-        cursor: pointer;
-      }
-      .field-suffix {
-        width: 16px;
-        padding: 3px 3px;
-        cursor: pointer;
+        .field-suffix {
+          width: 16px;
+          padding: 3px 3px;
+          cursor: pointer;
+        }
       }
     }
   }

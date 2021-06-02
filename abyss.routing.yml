@@ -1,8 +1,8 @@
 # The path to the page controller, which generates all the information for output.
 abyss.page:
-  path: 'abyss'
+  path: '/abyss'
   defaults:
-    _controller:  '\Drupal\abyss\Controller\PageController::page'
+    _form:  '\Drupal\abyss\Form\AbyssEditModalForm'
     _title: 'Table for the report'
   requirements:
     _permission: 'access content'
