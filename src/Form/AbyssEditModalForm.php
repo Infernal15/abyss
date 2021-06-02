@@ -279,25 +279,21 @@ class AbyssEditModalForm extends FormBase {
       $value_row_group[$i] = [];
       $this->gapValidation($tmp, $num_of_tables[$i], $value_row_group[$i]);
     }
-    $set_check = 0;
-    $end_check = 0;
+    $start = 0;
+    $end = 0;
     for ($i = 0; $i < count($value_row_group[$i]); $i++) {
       $value_row_group[$i] = array_filter($value_row_group[$i], function ($v) {
         return $v != '';
       });
       if ($i == 0) {
-        $set_check = array_key_first($value_row_group[$i]);
-        $end_check = array_key_last($value_row_group[$i]) + 1;
+        $start = array_key_first($value_row_group[$i]);
+        $end = array_key_last($value_row_group[$i]);
       }
       if (array_key_first($value_row_group[$i]) + count($value_row_group[$i]) !== array_key_last($value_row_group[$i]) + 1) {
         $form_state->set('valid', FALSE);
         return;
       }
-      if (array_key_first($value_row_group[$i]) != $set_check) {
-        $form_state->set('valid', FALSE);
-        return;
-      }
-      if (array_key_last($value_row_group[$i]) + 1 != $end_check) {
+      if (array_key_first($value_row_group[$i]) != $start || array_key_last($value_row_group[$i]) != $end) {
         $form_state->set('valid', FALSE);
         return;
       }
