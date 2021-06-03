@@ -273,15 +273,14 @@ class AbyssEditModalForm extends FormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $num_of_tables = $form_state->get('tables');
     $value_row_group = [];
+    $start = 0;
+    $end = 0;
 
     for ($i = 0; $i < count($num_of_tables); $i++) {
       $tmp = $form_state->getValue('list')[$i]['table'];
       $value_row_group[$i] = [];
       $this->gapValidation($tmp, $num_of_tables[$i], $value_row_group[$i]);
-    }
-    $start = 0;
-    $end = 0;
-    for ($i = 0; $i < count($value_row_group[$i]); $i++) {
+
       $value_row_group[$i] = array_filter($value_row_group[$i], function ($v) {
         return $v != '';
       });
