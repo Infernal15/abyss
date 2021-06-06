@@ -147,7 +147,7 @@ class AbyssEditModalForm extends FormBase {
             'class' => 'abyss-quarter',
             'data' => $this->t('Q3'),
           ],
-          $this->t('Act'),
+          $this->t('Oct'),
           $this->t('Nov'),
           $this->t('Dec'),
           [
