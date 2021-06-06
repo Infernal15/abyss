@@ -31,7 +31,7 @@ class AbyssEditModalForm extends FormBase {
    *
    * @var array
    */
-  protected array $fields = [
+  private static array $fields = [
     'Jan',
     'Feb',
     'Mar',
@@ -53,11 +53,6 @@ class AbyssEditModalForm extends FormBase {
 
   /**
    * {@inheritdoc}
-   *
-   * @param array $form
-   *   Contain form render array.
-   * @param \Drupal\Core\Form\FormStateInterface $form_state
-   *   Contains data stored in the form.
    */
   public function buildForm(array $form, FormStateInterface $form_state): array {
     $form['message'] = [
@@ -79,11 +74,16 @@ class AbyssEditModalForm extends FormBase {
         'callback' => '::addMoreCallback',
         'event' => 'click',
         'wrapper' => 'columns-wrapper',
+        'progress' => [
+          'type' => 'throbber',
+          'message' => $this->t('Wait, we adding table...'),
+        ],
       ],
     ];
 
     $tables = $form_state->get('tables');
     $check_element = $form_state->getTriggeringElement();
+    //$tables = empty($tables) ?? [0 => 1];
     if (empty($tables)) {
       $tables = [];
       $tables[] = 1;
@@ -115,6 +115,10 @@ class AbyssEditModalForm extends FormBase {
           'callback' => '::addMoreCallback',
           'event' => 'click',
           'wrapper' => 'columns-wrapper',
+          'progress' => [
+            'type' => 'throbber',
+            'message' => $this->t('Wait, we adding row for you...'),
+          ],
         ],
       ];
 
@@ -163,7 +167,7 @@ class AbyssEditModalForm extends FormBase {
           '#plain_text' => date('Y') - $j + 1,
         ];
 
-        foreach ($this->fields as $field) {
+        foreach (self::$fields as $field) {
           if (str_contains($field, 'Q') || str_contains($field, 'YTD')) {
             $form['list'][$i]['table'][$j][$field] = [
               '#type' => 'number',
@@ -175,8 +179,6 @@ class AbyssEditModalForm extends FormBase {
                   'abyss-quarter',
                 ],
               ],
-              '#field_prefix' => '-',
-              '#field_suffix' => '+',
             ];
             $temp = $form_state->getValue('list');
             if (!empty($temp)) {
@@ -215,6 +217,7 @@ class AbyssEditModalForm extends FormBase {
       ],
     ];
     $form['#attached']['library'][] = 'abyss/form';
+
     return $form;
   }
 
@@ -229,6 +232,14 @@ class AbyssEditModalForm extends FormBase {
    * Callback for both ajax-enabled buttons.
    *
    * Selects and returns the fieldset with the names in it.
+   *
+   * @param array $form
+   *   Contains a form element.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   Contains variables and data that have been saved in the form.
+   *
+   * @return \Drupal\Core\Ajax\AjaxResponse
+   *   Displays information about the save status.
    */
   public function addMoreCallback(array &$form, FormStateInterface $form_state) {
     return $form['list'];
@@ -243,7 +254,6 @@ class AbyssEditModalForm extends FormBase {
    *   Contains variables and data that have been saved in the form.
    *
    * @return \Drupal\Core\Ajax\AjaxResponse
-   *
    *   Displays information about the save status.
    */
   public function showStatus(array &$form, FormStateInterface $form_state): AjaxResponse {
@@ -251,10 +261,12 @@ class AbyssEditModalForm extends FormBase {
     $valid = $form_state->get('valid');
 
     if ($valid) {
-      $response->addCommand(new MessageCommand('Valid', '.result', ['type' => 'status']));
+      $response->addCommand(new MessageCommand($this->t('Valid'),
+        '.result', ['type' => 'status']));
     }
     else {
-      $response->addCommand(new MessageCommand('Invalid', '.result', ['type' => 'error']));
+      $response->addCommand(new MessageCommand($this->t('Invalid'),
+        '.result', ['type' => 'error']));
     }
 
     return $response;
@@ -278,25 +290,35 @@ class AbyssEditModalForm extends FormBase {
 
     for ($i = 0; $i < count($num_of_tables); $i++) {
       $tmp = $form_state->getValue('list')[$i]['table'];
-      $value_row_group[$i] = [];
-      $this->gapValidation($tmp, $num_of_tables[$i], $value_row_group[$i]);
+      $this->gapValidation($tmp, $num_of_tables[$i], $value_row_group);
 
-      $value_row_group[$i] = array_filter($value_row_group[$i], function ($v) {
-        return $v != '';
+      $value_row_group = array_filter($value_row_group, function ($v) {
+        return $v !== '';
       });
-      if ($i == 0) {
-        $start = array_key_first($value_row_group[$i]);
-        $end = array_key_last($value_row_group[$i]);
+
+      if ($i === 0) {
+        $start = array_key_first($value_row_group);
+        $end = array_key_last($value_row_group);
       }
-      if (array_key_first($value_row_group[$i]) + count($value_row_group[$i]) !== array_key_last($value_row_group[$i]) + 1) {
+
+      if (
+        array_key_first($value_row_group) + count($value_row_group)
+        !== array_key_last($value_row_group) + 1
+      ) {
         $form_state->set('valid', FALSE);
+
         return;
       }
-      if (array_key_first($value_row_group[$i]) != $start || array_key_last($value_row_group[$i]) != $end) {
+      if (
+        array_key_first($value_row_group) != $start
+        || array_key_last($value_row_group) != $end
+      ) {
         $form_state->set('valid', FALSE);
+
         return;
       }
     }
+
     $form_state->set('valid', TRUE);
   }
 
@@ -311,9 +333,11 @@ class AbyssEditModalForm extends FormBase {
    *   Used to return a grouped data set.
    */
   private function gapValidation(array $tmp, int $num_of_rows, array &$fields) {
-    $reversFields = array_reverse($this->fields);
+    $revers_fields = array_reverse(self::$fields);
+    $fields = [];
+
     for ($j = 1; $j <= $num_of_rows; $j++) {
-      foreach ($reversFields as $field) {
+      foreach ($revers_fields as $field) {
         if (!(str_contains($field, 'Q') || str_contains($field, 'YTD'))) {
           array_push($fields, $tmp[$j][$field]['#value']);
         }

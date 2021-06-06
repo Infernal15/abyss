@@ -5,54 +5,43 @@ Drupal.behaviors.abyss = {
   attach: function (context, settings) {
 
     (function ($, Drupal) {
-      $('#columns-wrapper td .abyss-quarter span[class^="field"]').once().bind('click', function (main) {
-        let setter = $($(main.target).closest('div.abyss-quarter')).children('input');
-        let element = $($(main.target).closest('div.abyss-quarter')).children('input').get(0);
-        let point = main.target.textContent;
-        let quarter = $($(main.target).closest('tr')).children('.abyss-quarter');
-        if (!element.dataset.value)
-          return;
+      $('#columns-wrapper td .abyss-quarter input').once().bind('change', function (main) {
+        let element = main.target;
+        if (!element.dataset?.value && element?.value)
+          element.dataset.value = element.value;
+
         let max = (parseFloat(element.dataset.value) + parseFloat('0.05')).toFixed(2);
         let min = (parseFloat(element.dataset.value) - parseFloat('0.05')).toFixed(2);
 
-        if (point === '+' && element.value < max) {
-          let temp = parseFloat(element.value) + parseFloat('0.01');
-          setter.val(temp.toFixed(2));
+        if (element.value < min || element.value > max) {
+          alert(`Значення перевищене на ${element.value < min ?
+            (min - element.value).toFixed(2)
+            : (element.value - max).toFixed(2)}, ` +
+            `базове значення - \'${element.dataset.value}\'\n` +
+            `доступне відхилення на 0.05`
+          );
+          element.value = element.dataset.value;
         }
-        else if (point === '-' && element.value > min) {
-          let temp = parseFloat(element.value) - parseFloat('0.01');
-          setter.val(temp.toFixed(2));
-        }
-        let first = parseFloat($(quarter.get(0)).find('input').val()).toFixed(2);
-        first = +first || 0;
-        let second = parseFloat($(quarter.get(1)).find('input').val()).toFixed(2);
-        second = +second || 0;
-        let third = parseFloat($(quarter.get(2)).find('input').val()).toFixed(2);
-        third = +third || 0;
-        let fourth = parseFloat($(quarter.get(3)).find('input').val()).toFixed(2);
-        fourth = +fourth || 0;
-        if (first === 0 && second === 0 && third === 0 && fourth === 0) {
-          $(quarter.get(4)).find('input').val('');
-          $(quarter.get(4)).find('input').get(0).dataset.value = '';
-        }
-        else {
-          let temp = parseFloat((first + second + third + fourth + 1)) / 4;
-          $(quarter.get(4)).find('input').val(temp.toFixed(2));
-          $(quarter.get(4)).find('input').get(0).dataset.value = temp.toFixed(2);
-        }
+
+        let quarter = $($(main.target).closest('tr')).children('.abyss-quarter');
+
+        quarterSet(quarter);
       });
 
-      $('.abyss-table').once().bind('change', function (main) {
+      $('.abyss-table .abyss-table-element input').once().bind('change', function (main) {
         let parent = $($(main.target).closest('tr'));
         let elem = parent.children('.abyss-table-element');
         let quarter = parent.children('.abyss-quarter');
+        let first;
+        let second;
+        let third;
 
         for (let i = 0; i < (quarter.length - 1) * 3; i += 3) {
-          let first = parseFloat($(elem.get(i)).find('input').val()).toFixed(2);
+          first = parseFloat($(elem.get(i)).find('input').val()).toFixed(2);
           first = +first || 0;
-          let second = parseFloat($(elem.get(i + 1)).find('input').val()).toFixed(2);
+          second = parseFloat($(elem.get(i + 1)).find('input').val()).toFixed(2);
           second = +second || 0;
-          let third = parseFloat($(elem.get(i + 2)).find('input').val()).toFixed(2);
+          third = parseFloat($(elem.get(i + 2)).find('input').val()).toFixed(2);
           third = +third || 0;
           if (first === 0 && second === 0 && third === 0) {
             $(quarter.get(i/3)).find('input').val('');
@@ -64,24 +53,28 @@ Drupal.behaviors.abyss = {
             $(quarter.get(i/3)).find('input').get(0).dataset.value = temp.toFixed(2);
           }
         }
-        let first = parseFloat($(quarter.get(0)).find('input').val()).toFixed(2);
-        first = +first || 0;
-        let second = parseFloat($(quarter.get(1)).find('input').val()).toFixed(2);
-        second = +second || 0;
-        let third = parseFloat($(quarter.get(2)).find('input').val()).toFixed(2);
-        third = +third || 0;
-        let fourth = parseFloat($(quarter.get(3)).find('input').val()).toFixed(2);
-        fourth = +fourth || 0;
-        if (first === 0 && second === 0 && third === 0 && fourth === 0) {
+
+        quarterSet(quarter);
+      });
+
+      function quarterSet(quarter) {
+        let quarter_value = 0.00;
+
+        for (let i = 0; i < 4; i++) {
+          let temp = parseFloat($(quarter[i]).find('input').val()).toFixed(2);
+          quarter_value += +temp || 0;
+        }
+
+        if (quarter_value === 0) {
           $(quarter.get(4)).find('input').val('');
           $(quarter.get(4)).find('input').get(0).dataset.value = '';
         }
         else {
-          let temp = parseFloat((first + second + third + fourth + 1)) / 4;
+          let temp = (quarter_value + 1) / 4;
           $(quarter.get(4)).find('input').val(temp.toFixed(2));
           $(quarter.get(4)).find('input').get(0).dataset.value = temp.toFixed(2);
         }
-      });
+      }
     }(jQuery, Drupal));
   }
 };

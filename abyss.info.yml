@@ -2,4 +2,4 @@ name: Abyss
 description: Certification module.
 package: abyss
 type: module
-core_version_requirement: 8.x || 9.x
+core_version_requirement: ^8.8 || ^9
