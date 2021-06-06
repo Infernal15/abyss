@@ -7,8 +7,10 @@ Drupal.behaviors.abyss = {
     (function ($, Drupal) {
       $('#columns-wrapper td .abyss-quarter input').once().bind('change', function (main) {
         let element = main.target;
-        if (!element.dataset?.value && element?.value)
-          element.dataset.value = element.value;
+        if (!element.dataset?.value) {
+          element.value = '';
+          return;
+        }
 
         let max = (parseFloat(element.dataset.value) + parseFloat('0.05')).toFixed(2);
         let min = (parseFloat(element.dataset.value) - parseFloat('0.05')).toFixed(2);
