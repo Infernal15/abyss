@@ -25,7 +25,8 @@ Drupal.behaviors.abyss = {
 
         let quarter = $($(main.target).closest('tr')).children('.abyss-quarter');
 
-        quarterSet(quarter);
+        if (!main.target.id.includes('ytd'))
+          quarterSet(quarter);
       });
 
       $('.abyss-table .abyss-table-element input').once().bind('change', function (main) {
