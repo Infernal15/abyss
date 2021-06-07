@@ -83,11 +83,8 @@ class AbyssEditModalForm extends FormBase {
 
     $tables = $form_state->get('tables');
     $check_element = $form_state->getTriggeringElement();
+    $tables = empty($tables) ? [1] : $tables;
 
-    if (empty($tables)) {
-      $tables = [];
-      $tables[] = 1;
-    }
     if (!empty($check_element)) {
       if ($check_element['#name'] == 'add_table') {
         $tables[] = 1;
