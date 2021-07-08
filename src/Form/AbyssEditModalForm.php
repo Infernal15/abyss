@@ -13,13 +13,6 @@ use Drupal\Core\Form\FormStateInterface;
 class AbyssEditModalForm extends FormBase {
 
   /**
-   * Form with 'add more' and 'remove' buttons.
-   *
-   * This example shows a button to "add more" - add another textfield, and
-   * the corresponding "remove" button.
-   */
-
-  /**
    * Array of table values.
    *
    * @var array
@@ -50,6 +43,33 @@ class AbyssEditModalForm extends FormBase {
     'Q4',
     'YTD',
   ];
+
+  /**
+   * Contained array headers name.
+   *
+   * @var array
+   */
+  private static array $headers;
+
+  /**
+   * Used fo generate array $headers value.
+   *
+   * @param array $list
+   *   Contained months naming.
+   *
+   * @return array
+   *   Return array headers name.
+   */
+  private function headerGenerate(array $list): array{
+    if (empty(self::$headers)) {
+      array_unshift($list, 'Year');
+      self::$headers = array_map(
+        fn (string $item) => $this->t($item),
+        $list);
+    }
+
+    return self::$headers;
+  }
 
   /**
    * {@inheritdoc}
@@ -86,118 +106,20 @@ class AbyssEditModalForm extends FormBase {
     $tables = empty($tables) ? [1] : $tables;
 
     if (!empty($check_element)) {
-      if ($check_element['#name'] == 'add_table') {
+      if ($check_element['#name'] === 'add_table') {
         $tables[] = 1;
       }
-      if ($check_element) {
-        if (str_contains($check_element['#name'], 'add_rows')) {
-          $tables[$check_element['#table']]++;
-        }
+      else if (str_contains($check_element['#name'], 'add_rows')) {
+        $tables[$check_element['#table']]++;
       }
     }
 
     $form_state->set('tables', $tables);
+    $list = $form_state->getValue('list');
+    $tables_count = count($tables);
 
-    for ($i = 0; $i < count($tables); $i++) {
-      $form['list'][$i] = [
-        '#type' => 'fieldgroup',
-      ];
-      $form['list'][$i]['add_row'] = [
-        '#name' => 'add_rows_' . $i,
-        '#type' => 'button',
-        '#table' => $i,
-        '#value' => $this->t('Add Year'),
-        '#submit' => ['::addRow'],
-        '#ajax' => [
-          'callback' => '::addMoreCallback',
-          'event' => 'click',
-          'wrapper' => 'columns-wrapper',
-          'progress' => [
-            'type' => 'throbber',
-            'message' => $this->t('Wait, we adding row for you...'),
-          ],
-        ],
-      ];
-
-      $form['list'][$i]['table'] = [
-        '#type' => 'table',
-        '#header' => [
-          $this->t('Year'),
-          $this->t('Jan'),
-          $this->t('Feb'),
-          $this->t('Mar'),
-          [
-            'class' => 'abyss-quarter',
-            'data' => $this->t('Q1'),
-          ],
-          $this->t('Apr'),
-          $this->t('May'),
-          $this->t('Jun'),
-          [
-            'class' => 'abyss-quarter',
-            'data' => $this->t('Q2'),
-          ],
-          $this->t('Jul'),
-          $this->t('Aug'),
-          $this->t('Sep'),
-          [
-            'class' => 'abyss-quarter',
-            'data' => $this->t('Q3'),
-          ],
-          $this->t('Oct'),
-          $this->t('Nov'),
-          $this->t('Dec'),
-          [
-            'class' => 'abyss-quarter',
-            'data' => $this->t('Q4'),
-          ],
-          [
-            'class' => 'abyss-quarter',
-            'data' => $this->t('YTD'),
-          ],
-        ],
-      ];
-      $form['list'][$i]['table']['#attributes']['class'][] = 'abyss-table';
-
-      for ($j = $tables[$i]; $j > 0; $j--) {
-        $form['list'][$i]['table'][$j]['Year'] = [
-          '#plain_text' => date('Y') - $j + 1,
-        ];
-
-        foreach (self::$fields as $field) {
-          if (str_contains($field, 'Q') || str_contains($field, 'YTD')) {
-            $form['list'][$i]['table'][$j][$field] = [
-              '#type' => 'number',
-              '#step' => 0.01,
-              '#title' => $field,
-              '#title_display' => 'invisible',
-              '#wrapper_attributes' => [
-                'class' => [
-                  'abyss-quarter',
-                ],
-              ],
-            ];
-            $temp = $form_state->getValue('list');
-            if (!empty($temp)) {
-              $form['list'][$i]['table'][$j][$field]['#attributes']['data-value'] = $temp[$i]['table'][$j][$field];
-            }
-            else {
-              $form['list'][$i]['table'][$j][$field]['#attributes']['data-value'] = '';
-            }
-            continue;
-          }
-          $form['list'][$i]['table'][$j][$field] = [
-            '#type' => 'number',
-            '#title' => $field,
-            '#title_display' => 'invisible',
-            '#wrapper_attributes' => [
-              'class' => [
-                'abyss-table-element',
-              ],
-            ],
-          ];
-        }
-      }
+    for ($i = 0; $i < $tables_count; $i++) {
+      $this->createTable($form, $i, $tables, $list);
     }
 
     $form['list']['actions'] = [
@@ -218,10 +140,69 @@ class AbyssEditModalForm extends FormBase {
     return $form;
   }
 
+  private function createTable(array &$form, $i, $tables, $list): void {
+    $form['list'][$i] = [
+      '#type' => 'fieldgroup',
+    ];
+    $form['list'][$i]['add_row'] = [
+      '#name' => 'add_rows_' . $i,
+      '#type' => 'button',
+      '#table' => $i,
+      '#value' => $this->t('Add Year'),
+      '#submit' => ['::addRow'],
+      '#ajax' => [
+        'callback' => '::addMoreCallback',
+        'event' => 'click',
+        'wrapper' => 'columns-wrapper',
+        'progress' => [
+          'type' => 'throbber',
+          'message' => $this->t('Wait, we adding row for you...'),
+        ],
+      ],
+    ];
+
+    $form['list'][$i]['table'] = [
+      '#type' => 'table',
+      '#header' => $this->headerGenerate(self::$fields),
+    ];
+    $form['list'][$i]['table']['#attributes']['class'][] = 'abyss-table';
+
+    for ($j = $tables[$i]; $j > 0; $j--) {
+      $this->createRow($form, $i, $j, $list);
+    }
+  }
+
+  private function createRow(array &$form, $i, $j, $list): void {
+    $form['list'][$i]['table'][$j]['Year'] = [
+      '#plain_text' => date('Y') - $j + 1,
+    ];
+
+    foreach (self::$fields as $field) {
+      $form['list'][$i]['table'][$j][$field] = [
+        '#type' => 'number',
+        '#title' => $field,
+        '#step' => 0.01,
+        '#title_display' => 'invisible',
+      ];
+
+      if (str_contains($field, 'Q') || str_contains($field, 'YTD')) {
+        $form['list'][$i]['table'][$j][$field]['#wrapper_attributes']['class'][] = 'abyss-quarter';
+        if (!empty($list)) {
+          $form['list'][$i]['table'][$j][$field]['#attributes']['data-value'] = $list[$i]['table'][$j][$field];
+        }
+        else {
+          $form['list'][$i]['table'][$j][$field]['#attributes']['data-value'] = '';
+        }
+        continue;
+      }
+      $form['list'][$i]['table'][$j][$field]['#wrapper_attributes']['class'][] = 'abyss-table-element';
+    }
+  }
+
   /**
    * {@inheritdoc}
    */
-  public function getFormId() {
+  public function getFormId(): string {
     return 'abyss_table_form';
   }
 
@@ -235,10 +216,10 @@ class AbyssEditModalForm extends FormBase {
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   Contains variables and data that have been saved in the form.
    *
-   * @return \Drupal\Core\Ajax\AjaxResponse
+   * @return array
    *   Displays information about the save status.
    */
-  public function addMoreCallback(array &$form, FormStateInterface $form_state) {
+  public function addMoreCallback(array &$form, FormStateInterface $form_state): array {
     return $form['list'];
   }
 
@@ -279,19 +260,16 @@ class AbyssEditModalForm extends FormBase {
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   Contains data stored in the form.
    */
-  public function submitForm(array &$form, FormStateInterface $form_state) {
+  public function submitForm(array &$form, FormStateInterface $form_state): void {
     $num_of_tables = $form_state->get('tables');
     $value_row_group = [];
     $start = 0;
     $end = 0;
+    $table_count = count($num_of_tables);
+    $list = $form_state->getValue('list');
 
-    for ($i = 0; $i < count($num_of_tables); $i++) {
-      $tmp = $form_state->getValue('list')[$i]['table'];
-      $this->gapValidation($tmp, $num_of_tables[$i], $value_row_group);
-
-      $value_row_group = array_filter($value_row_group, function ($v) {
-        return $v !== '';
-      });
+    for ($i = 0; $i < $table_count; $i++) {
+      $this->gapValidation($list[$i]['table'], $num_of_tables[$i], $value_row_group);
 
       if ($i === 0) {
         $start = array_key_first($value_row_group);
@@ -299,19 +277,14 @@ class AbyssEditModalForm extends FormBase {
       }
 
       if (
+      array_key_first($value_row_group) !== $start
+      || array_key_last($value_row_group) !== $end
+      || (
         array_key_first($value_row_group) + count($value_row_group)
         !== array_key_last($value_row_group) + 1
+      )
       ) {
         $form_state->set('valid', FALSE);
-
-        return;
-      }
-      if (
-        array_key_first($value_row_group) != $start
-        || array_key_last($value_row_group) != $end
-      ) {
-        $form_state->set('valid', FALSE);
-
         return;
       }
     }
@@ -329,14 +302,18 @@ class AbyssEditModalForm extends FormBase {
    * @param array $fields
    *   Used to return a grouped data set.
    */
-  private function gapValidation(array $tmp, int $num_of_rows, array &$fields) {
+  private function gapValidation(array $tmp, int $num_of_rows, array &$fields): void {
     $revers_fields = array_reverse(self::$fields);
     $fields = [];
+    $i = 0;
 
     for ($j = 1; $j <= $num_of_rows; $j++) {
       foreach ($revers_fields as $field) {
         if (!(str_contains($field, 'Q') || str_contains($field, 'YTD'))) {
-          array_push($fields, $tmp[$j][$field]['#value']);
+          if ('' !== $item = $tmp[$j][$field]['#value']) {
+            $fields[$i] = $item;
+          }
+          $i++;
         }
       }
     }
