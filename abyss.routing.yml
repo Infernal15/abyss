@@ -2,7 +2,7 @@
 abyss.page:
   path: '/abyss'
   defaults:
-    _form:  '\Drupal\abyss\Form\AbyssEditModalForm'
+    _form:  '\Drupal\abyss\Form\AbyssForm'
     _title: 'Table for the report'
   requirements:
     _permission: 'access content'

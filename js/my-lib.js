@@ -32,7 +32,7 @@ Drupal.behaviors.abyss = {
         const quarter = $($(main.target).closest('tr')).children('.abyss-quarter');
 
         if (!main.target.id.includes('ytd')) {
-          quarterSet(quarter);
+          setYear(quarter);
         }
       });
 
@@ -74,7 +74,7 @@ Drupal.behaviors.abyss = {
           }
         }
 
-        quarterSet(quarter);
+        setYear(quarter);
       });
 
       /**
@@ -83,7 +83,7 @@ Drupal.behaviors.abyss = {
        * @param quarter
        *   Contained quarter list.
        */
-      function quarterSet(quarter) {
+      function setYear(quarter) {
         let quarter_value = 0.00;
         let temp;
 

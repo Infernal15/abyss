@@ -10,7 +10,7 @@ use Drupal\Core\Form\FormStateInterface;
 /**
  * Test module.
  */
-class AbyssEditModalForm extends FormBase {
+class AbyssForm extends FormBase {
 
   /**
    * Array of table values.
